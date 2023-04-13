@@ -17,4 +17,6 @@ use App\Http\Controllers\EventController;
 
 Route::get('/', [EventController::class, 'index']);
 
-Route::get('/registros', [EventController::class, 'registros']);
+Route::get('/registrarEncomendas', [EventController::class, 'registrarEncomendas']);
+Route::post('/salvarEncomendas', [EventController::class, 'salvarEncomendas']);
+Route::get('/encomendas', [EventController::class, 'encomendas']);
