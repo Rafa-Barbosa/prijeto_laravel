@@ -25,20 +25,37 @@ class EventController extends Controller
     public function salvarEncomendas(Request $post) {
         $pedidos = new pedidos();
 
-        $preco = str_replace('.', '', $post->valor_frete);
-        $preco = str_replace(',', '.', $preco);
+        $ret = array();
+        $url = "http://localhost/api.php";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $resposta = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if(in_array($httpCode, array(200, 201, 202))){
+            if($resposta != ''){
+                $ret = json_decode($resposta);
+                // $ret = $resposta;
+            }
+        }
+        curl_close($ch);
 
-        $pedidos->id_cliente = $post->cliente;
-        $pedidos->id_produto = $post->produto;
-        $pedidos->local_partida = $post->local_partida;
-        $pedidos->local_destino = $post->local_destino;
-        $pedidos->valor_frete = $preco;
-        $pedidos->data_entrega = date('Y-m-d', strtotime($post->data_entrega));
-        $pedidos->descricao = $post->descricao;
+        print_r($ret);
 
-        $pedidos->save();
+        // $preco = str_replace('.', '', $post->valor_frete);
+        // $preco = str_replace(',', '.', $preco);
 
-        return redirect('/registrarEncomendas?registrado=1');
+        // $pedidos->id_cliente = $post->cliente;
+        // $pedidos->id_produto = $post->produto;
+        // $pedidos->local_partida = $post->local_partida;
+        // $pedidos->local_destino = $post->local_destino;
+        // $pedidos->valor_frete = $preco;
+        // $pedidos->data_entrega = date('Y-m-d', strtotime($post->data_entrega));
+        // $pedidos->descricao = $post->descricao;
+
+        // $pedidos->save();
+
+        // return redirect('/registrarEncomendas?registrado=1');
     }
 
     public function encomendas() {
