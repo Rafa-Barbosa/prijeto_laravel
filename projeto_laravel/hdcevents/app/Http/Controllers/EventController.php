@@ -23,70 +23,84 @@ class EventController extends Controller
     }
 
     public function salvarEncomendas(Request $post) {
-        $pedidos = new pedidos();
+        $ret = $this->curl('salvarPedido');
 
+        $registrado = ($ret == 'true') ? 1 : 0;
+        
+        return redirect("/registrarEncomendas?registrado=$registrado");
+    }
+
+    public function encomendas() {
+        $pedidos = $this->curl('getPedidos');
+
+        $clientes = [];
+        $produtos = [];
+        $param = [];
+
+        $clientes[0] = 'Cliente não registrado';
+        $produtos[0] = 'Produto não registrado';
+        foreach($pedidos as $key => $pedido) {
+            // para que não seja feita conexões com o banco desnecessárias, as informações são gravas em arrays
+            if(!isset($clientes[$pedido['id_cliente']])) {
+                $cliente = $this->curl('getClientes', 'id = '.$pedido['id_cliente']);
+
+                $clientes[$pedido['id_cliente']] = $cliente[0]['nome'];
+            }
+            if(!isset($produtos[$pedido['id_produto']])) {
+                $produto = $this->curl('getProdutos', 'id = '.$pedido['id_produto']);
+
+                $produtos[$pedido['id_produto']] = $produto[0]['nome'];
+            }
+
+            $data = explode('-', $pedido['data_entrega']);
+
+            $temp = [];
+            $temp['cliente']        = $clientes[$pedido['id_cliente']];
+            $temp['produto']        = $produtos[$pedido['id_produto']];
+            $temp['local_partida']  = $pedido['local_partida'];
+            $temp['local_destino']  = $pedido['local_destino'];
+            $temp['valor_frete']    = number_format($pedido['valor_frete'], 2, ',', '.');
+            $temp['data_entrega']   = $data[2] . '/' . $data[1] . '/' . $data[0];
+            $temp['descricao']      = $pedido['descricao'];
+
+            $param[] = $temp;
+        }
+
+        return view('encomendas', ['pedidos' => $param]);
+    }
+
+    private function curl($operacao, $where = '') {
         $ret = array();
-        $url = "http://localhost/api.php";
+        $chave = md5('clienteEmPrimeiroLugar');
+
+        $post = array(
+            'chave' => $chave,
+            'operacao' => $operacao,
+            ($_POST ?? ''),
+            'where' => $where
+        );
+        $post = json_encode($post);
+
+        $url = "http://localhost/apis/api.php";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+
+        $headers = [];
+        $headers[] = 'Content-Type: application/json';
+        $headers[] = 'Content-Length: ' . strlen($post);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $resposta = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if(in_array($httpCode, array(200, 201, 202))){
             if($resposta != ''){
-                $ret = json_decode($resposta);
-                // $ret = $resposta;
+                $ret = json_decode($resposta, true);
             }
         }
         curl_close($ch);
 
-        print_r($ret);
-
-        // $preco = str_replace('.', '', $post->valor_frete);
-        // $preco = str_replace(',', '.', $preco);
-
-        // $pedidos->id_cliente = $post->cliente;
-        // $pedidos->id_produto = $post->produto;
-        // $pedidos->local_partida = $post->local_partida;
-        // $pedidos->local_destino = $post->local_destino;
-        // $pedidos->valor_frete = $preco;
-        // $pedidos->data_entrega = date('Y-m-d', strtotime($post->data_entrega));
-        // $pedidos->descricao = $post->descricao;
-
-        // $pedidos->save();
-
-        // return redirect('/registrarEncomendas?registrado=1');
-    }
-
-    public function encomendas() {
-        $pedidos = pedidos::all();
-
-        $clientes = [];
-        $produtos = [];
-
-        $clientes[0] = 'Cliente não registrado';
-        $produtos[0] = 'Produto não registrado';
-        foreach($pedidos as $pedido) {
-            // para que não seja feita conexões com o banco desnecessárias, as informações são gravas em arrays
-            if(!isset($clientes[$pedido->id_cliente])) {
-                $cliente = clientes::where('id', '=', $pedido->id_cliente)->first();
-
-                $clientes[$pedido->id_cliente] = $cliente->nome;
-            }
-            if(!isset($produtos[$pedido->id_produto])) {
-                $produto = produtos::where('id', '=', $pedido->id_produto)->first();
-
-                $produtos[$pedido->id_produto] = $produto->nome;
-            }
-
-            // os IDs são substituidos pelos nomes
-            $pedido->id_cliente = $clientes[$pedido->id_cliente];
-            $pedido->id_produto = $produtos[$pedido->id_produto];
-
-            $data = explode('-', $pedido->data_entrega);
-            $pedido->data_entrega = $data[2] . '/' . $data[1] . '/' . $data[0];
-        }
-
-        return view('encomendas', ['pedidos' => $pedidos]);
+        return $ret;
     }
 }
