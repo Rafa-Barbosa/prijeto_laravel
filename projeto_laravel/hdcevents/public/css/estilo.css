@@ -1,0 +1,66 @@
+body {
+    font-family: 'Nunito', sans-serif;
+    padding: 0;
+    margin: 0;
+    background-color: 	#082936;
+    color: white;
+}
+
+/* Cabecalho da pagina */
+header {
+	width: 100%;
+	background-color: #0d243e;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	padding: 20px 0;
+	color: white;
+}
+
+.logo-imagem {
+	width: 50px;
+	height: 50px;
+	border-radius: 25px;
+}
+
+.logo-imagem img{
+	width: 120px;
+	height: auto;
+	margin-top: -20px;
+}
+
+.container-logo {
+	display: flex;
+	align-items: center;
+}
+
+.menu li {
+	display: inline-block;
+	margin: 0 10px;
+}
+
+.menu li a {
+	font-size: 24px;
+	text-decoration: none;
+	color: white;
+	text-transform: uppercase;
+	padding: 10px 25px;
+	border-radius: 15px;
+}
+
+.menu li a:hover {
+	background-color: rgba(100, 100, 100, 0.8);
+}
+
+h1 {
+    text-align: center;
+    margin: 20px auto 50px;
+}
+.container {
+    width: 90%;
+    padding: 0;
+}
+.table {
+    width: 100%;
+    margin: auto;
+}
