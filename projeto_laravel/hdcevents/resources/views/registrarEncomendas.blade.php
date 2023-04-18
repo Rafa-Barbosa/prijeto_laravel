@@ -36,8 +36,8 @@
         <header>
             <div class="menu">
                 <ul>
-                    <li><a href="http://127.0.0.1:8000/">Home</a></li>
-                    <li><a href="http://127.0.0.1:8000/encomendas">Relatório de Encomenda</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/encomendas">Relatório de Encomenda</a></li>
                 </ul>
             </div>
         </header>
@@ -66,7 +66,7 @@
                     <select name="cliente" id="cliente">
                         <option value="0">Selecione uma opção</option>
                         @foreach($clientes as $cliente)
-                            <option value="{{$cliente->id}}">{{$cliente->nome}}</option>
+                            <option value="{{$cliente['id']}}">{{$cliente['nome']}}</option>
                         @endforeach
                     </select><br>
 
@@ -74,7 +74,7 @@
                     <select name="produto" id="produto">
                         <option value="0">Selecione uma opção</option>
                         @foreach($produtos as $produto)
-                            <option value="{{$produto->id}}">{{$produto->nome}}</option>
+                            <option value="{{$produto['id']}}">{{$produto['nome']}}</option>
                         @endforeach
                     </select><br>
 
