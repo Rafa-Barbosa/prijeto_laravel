@@ -7,10 +7,11 @@ $json = file_get_contents('php://input');
 $post = json_decode($json, true);
 
 if($chave == $post['chave']) {
+    $ret = '';
     $db = new db();
 
     switch($post['operacao']) {
-        case 'salvarPedido':
+        case 'setPedido':
             $form = $post[0];
 
             $valor_frete = str_replace('.', '', $form['valor_frete']);
@@ -37,8 +38,24 @@ if($chave == $post['chave']) {
                 echo 'false';
             }
             break;
+        case 'setCliente':
+            $form = $post[0];
+
+            $aniversario = date('Y-m-d', strtotime($form['aniversario']));
+
+            $sql = "INSERT INTO clientes (nome, endereco, aniversario, cpf, rg)
+            VALUES ('".$form['nome']."', '".$form['endereco']."', '$aniversario', '".$form['cpf']."', '".$form['rg']."')";
+            $ret = $db->query($sql);
+
+            if($ret) {
+                echo json_encode("true");
+            } else {
+                echo $ret;
+            }
+            break;
         case 'getClientes':
-            $sql = "SELECT * FROM `clientes` WHERE ".$post['where'];
+            $where = !empty($post['where']) ? "WHERE ".$post['where'] : '';
+            $sql = "SELECT * FROM `clientes` $where";
             $ret = $db->query($sql);
 
             if(!is_string($ret)) {
@@ -48,7 +65,8 @@ if($chave == $post['chave']) {
             }
             break;
         case 'getProdutos';
-            $sql = "SELECT * FROM `produtos` WHERE ".$post['where'];
+            $where = !empty($post['where']) ? "WHERE ".$post['where'] : '';
+            $sql = "SELECT * FROM `produtos` $where";
             $ret = $db->query($sql);
 
             if(!is_string($ret)) {
