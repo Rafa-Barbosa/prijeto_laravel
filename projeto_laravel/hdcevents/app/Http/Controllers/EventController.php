@@ -14,16 +14,17 @@ class EventController extends Controller
         return view('index');
     }
 
+    // ==================== Pedidos =========================
     public function registrarEncomendas(Request $get) {
-        $clientes = clientes::all();
-        $produtos = produtos::all();
+        $clientes = $this->curl('getClientes');
+        $produtos = $this->curl('getProdutos');
         $salvo = $get->get('registrado');
 
         return view('registrarEncomendas', ['clientes' => $clientes, 'produtos' => $produtos, 'salvo' => $salvo]);
     }
 
     public function salvarEncomendas(Request $post) {
-        $ret = $this->curl('salvarPedido');
+        $ret = $this->curl('setPedido');
 
         $registrado = ($ret == 'true') ? 1 : 0;
         
@@ -67,6 +68,44 @@ class EventController extends Controller
         }
 
         return view('encomendas', ['pedidos' => $param]);
+    }
+
+
+    // ==================== Clientes =========================
+    public function registrarClientes(Request $get) {
+        $salvo = $get->get('registrado');
+
+        return view('registrarCllientes', ['salvo' => $salvo]);
+    }
+
+    public function salvarClientes(Request $post) {
+        $ret = $this->curl('setCliente');
+
+        $registrado = ($ret == 'true') ? 1 : 0;
+
+        return redirect("/registrarClientes?registrado=$registrado");
+    }
+
+    public function relatorioClientes() {
+        $clientes = $this->curl('getClientes');
+        $param = [];
+
+        if(is_array($clientes) && count($clientes) > 0) {
+            foreach($clientes as $cliente) {
+                $data = explode('-', $cliente['aniversario']);
+
+                $temp = [];
+                $temp['nome']           = $cliente['nome'];
+                $temp['endereco']       = $cliente['endereco'];
+                $temp['aniversario']    = $data[2] . '/' . $data[1] . '/' . $data[0];
+                $temp['cpf']            = $cliente['cpf'];
+                $temp['rg']             = $cliente['rg'];
+
+                $param[] = $temp;
+            }
+        }
+
+        return view('relatorioClientes', ['clientes' => $param]);
     }
 
     private function curl($operacao, $where = '') {
