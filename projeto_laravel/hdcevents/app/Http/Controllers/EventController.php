@@ -120,7 +120,7 @@ class EventController extends Controller
         );
         $post = json_encode($post);
 
-        $url = "http://localhost/apis/api.php";
+        $url = "http://localhost/api/api.php";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
