@@ -32,39 +32,41 @@ class EventController extends Controller
     }
 
     public function encomendas() {
+        $param = [];
         $pedidos = $this->curl('getPedidos');
 
-        $clientes = [];
-        $produtos = [];
-        $param = [];
-
-        $clientes[0] = 'Cliente não registrado';
-        $produtos[0] = 'Produto não registrado';
-        foreach($pedidos as $key => $pedido) {
-            // para que não seja feita conexões com o banco desnecessárias, as informações são gravas em arrays
-            if(!isset($clientes[$pedido['id_cliente']])) {
-                $cliente = $this->curl('getClientes', 'id = '.$pedido['id_cliente']);
-
-                $clientes[$pedido['id_cliente']] = $cliente[0]['nome'];
+        if(is_array($pedidos) && count($pedidos)) {
+            $clientes = [];
+            $produtos = [];
+    
+            $clientes[0] = 'Cliente não registrado';
+            $produtos[0] = 'Produto não registrado';
+            foreach($pedidos as $key => $pedido) {
+                // para que não seja feita conexões com o banco desnecessárias, as informações são gravas em arrays
+                if(!isset($clientes[$pedido['id_cliente']])) {
+                    $cliente = $this->curl('getClientes', 'id = '.$pedido['id_cliente']);
+    
+                    $clientes[$pedido['id_cliente']] = $cliente[0]['nome'];
+                }
+                if(!isset($produtos[$pedido['id_produto']])) {
+                    $produto = $this->curl('getProdutos', 'id = '.$pedido['id_produto']);
+    
+                    $produtos[$pedido['id_produto']] = $produto[0]['nome'];
+                }
+    
+                $data = explode('-', $pedido['data_entrega']);
+    
+                $temp = [];
+                $temp['cliente']        = $clientes[$pedido['id_cliente']];
+                $temp['produto']        = $produtos[$pedido['id_produto']];
+                $temp['local_partida']  = $pedido['local_partida'];
+                $temp['local_destino']  = $pedido['local_destino'];
+                $temp['valor_frete']    = number_format($pedido['valor_frete'], 2, ',', '.');
+                $temp['data_entrega']   = $data[2] . '/' . $data[1] . '/' . $data[0];
+                $temp['descricao']      = $pedido['descricao'];
+    
+                $param[] = $temp;
             }
-            if(!isset($produtos[$pedido['id_produto']])) {
-                $produto = $this->curl('getProdutos', 'id = '.$pedido['id_produto']);
-
-                $produtos[$pedido['id_produto']] = $produto[0]['nome'];
-            }
-
-            $data = explode('-', $pedido['data_entrega']);
-
-            $temp = [];
-            $temp['cliente']        = $clientes[$pedido['id_cliente']];
-            $temp['produto']        = $produtos[$pedido['id_produto']];
-            $temp['local_partida']  = $pedido['local_partida'];
-            $temp['local_destino']  = $pedido['local_destino'];
-            $temp['valor_frete']    = number_format($pedido['valor_frete'], 2, ',', '.');
-            $temp['data_entrega']   = $data[2] . '/' . $data[1] . '/' . $data[0];
-            $temp['descricao']      = $pedido['descricao'];
-
-            $param[] = $temp;
         }
 
         return view('encomendas', ['pedidos' => $param]);
@@ -87,8 +89,8 @@ class EventController extends Controller
     }
 
     public function relatorioClientes() {
-        $clientes = $this->curl('getClientes');
         $param = [];
+        $clientes = $this->curl('getClientes');
 
         if(is_array($clientes) && count($clientes) > 0) {
             foreach($clientes as $cliente) {
@@ -115,7 +117,7 @@ class EventController extends Controller
         $post = array(
             'chave' => $chave,
             'operacao' => $operacao,
-            ($_POST ?? ''),
+            'form' => ($_POST ?? []),
             'where' => $where
         );
         $post = json_encode($post);

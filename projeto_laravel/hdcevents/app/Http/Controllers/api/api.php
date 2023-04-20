@@ -12,7 +12,7 @@ if($chave == $post['chave']) {
 
     switch($post['operacao']) {
         case 'setPedido':
-            $form = $post[0];
+            $form = $post['form'];
 
             $valor_frete = str_replace('.', '', $form['valor_frete']);
             $valor_frete = str_replace(',', '.', $valor_frete);
@@ -39,7 +39,7 @@ if($chave == $post['chave']) {
             }
             break;
         case 'setCliente':
-            $form = $post[0];
+            $form = $post['form'];
 
             $aniversario = date('Y-m-d', strtotime($form['aniversario']));
 
