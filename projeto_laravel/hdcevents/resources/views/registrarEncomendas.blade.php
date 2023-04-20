@@ -65,17 +65,21 @@
                     <label for="cliente"><b>Cliente:</b></label><br>
                     <select name="cliente" id="cliente">
                         <option value="0">Selecione uma opção</option>
-                        @foreach($clientes as $cliente)
-                            <option value="{{$cliente['id']}}">{{$cliente['nome']}}</option>
-                        @endforeach
+                        @if(is_array($clientes) && count($clientes) > 0)
+                            @foreach($clientes as $cliente)
+                                <option value="{{$cliente['id']}}">{{$cliente['nome']}}</option>
+                            @endforeach
+                        @endif
                     </select><br>
 
                     <label for="produto"><b>Produto:</b></label><br>
                     <select name="produto" id="produto">
                         <option value="0">Selecione uma opção</option>
-                        @foreach($produtos as $produto)
-                            <option value="{{$produto['id']}}">{{$produto['nome']}}</option>
-                        @endforeach
+                        @if(is_array($produtos) && count($produtos) > 0)
+                            @foreach($produtos as $produto)
+                                <option value="{{$produto['id']}}">{{$produto['nome']}}</option>
+                            @endforeach
+                        @endif
                     </select><br>
 
                     <label for="local_partida"><b>Local de partida:</b></label><br>

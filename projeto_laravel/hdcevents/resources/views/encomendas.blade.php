@@ -42,17 +42,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($pedidos as $pedido)
+                            @if(count($pedidos) > 0)
+                                @foreach($pedidos as $pedido)
+                                    <tr>
+                                        <td>{{ $pedido['cliente'] }}</td>
+                                        <td>{{ $pedido['produto'] }}</td>
+                                        <td>{{ $pedido['local_partida'] }}</td>
+                                        <td>{{ $pedido['local_destino'] }}</td>
+                                        <td>R$ {{ $pedido['valor_frete'] }}</td>
+                                        <td>{{ $pedido['data_entrega'] }}</td>
+                                        <td>{{ $pedido['descricao'] }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
                                 <tr>
-                                    <td>{{ $pedido['cliente'] }}</td>
-                                    <td>{{ $pedido['produto'] }}</td>
-                                    <td>{{ $pedido['local_partida'] }}</td>
-                                    <td>{{ $pedido['local_destino'] }}</td>
-                                    <td>R$ {{ $pedido['valor_frete'] }}</td>
-                                    <td>{{ $pedido['data_entrega'] }}</td>
-                                    <td>{{ $pedido['descricao'] }}</td>
+                                    <td colspan="7" style="text-align: center;">Nenhum registro encontrado</td>
                                 </tr>
-                            @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>

@@ -40,15 +40,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($clientes as $cliente)
+                            @if(count($clientes) > 0)
+                                @foreach($clientes as $cliente)
+                                    <tr>
+                                        <td>{{ $cliente['nome'] }}</td>
+                                        <td>{{ $cliente['endereco'] }}</td>
+                                        <td>{{ $cliente['aniversario'] }}</td>
+                                        <td>{{ $cliente['cpf'] }}</td>
+                                        <td>{{ $cliente['rg'] }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
                                 <tr>
-                                    <td>{{ $cliente['nome'] }}</td>
-                                    <td>{{ $cliente['endereco'] }}</td>
-                                    <td>{{ $cliente['aniversario'] }}</td>
-                                    <td>{{ $cliente['cpf'] }}</td>
-                                    <td>{{ $cliente['rg'] }}</td>
+                                    <td colspan="7" style="text-align: center;">Nenhum registro encontrado</td>
                                 </tr>
-                            @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>
